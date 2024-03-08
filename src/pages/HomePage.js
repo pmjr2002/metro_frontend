@@ -23,8 +23,11 @@ export default function HomePage() {
   return (
     <div className="h-[calc(100vh-64px)] bg-zinc-800">
       <div className = "flex w-full justify-evenly p-4">
-        <SearchBar placeholder = "Search source"/>
-        <SearchBar placeholder = "Search destination"/>
+        <SearchBar
+          placeholder = "Search source"
+          suggestions={['Station 1', 'Station 2', 'Station 3']}
+          onSearch = {(suggestion) => alert(suggestion)}
+          />
       </div>
     </div>
   )

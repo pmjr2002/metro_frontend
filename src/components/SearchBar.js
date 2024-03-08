@@ -1,39 +1,57 @@
-import React, {useState} from 'react'
-import axios from "axios"
-import {FaSearch} from "react-icons/fa"
+import React, { useState, useEffect } from 'react';
+import {FaSearch} from "react-icons/fa";
 
-const SearchBar = ({placeholder, data}) => {
-	const [searchText, setSearchText] = useState('')
-	const [isSearching, setIsSearching] = useState(false)
+const SearchBar = ({ placeholder, suggestions, onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
-	const handleChange = (event) => {
-		setSearchText(event.target.value.toLowerCase())
-		event.target.value === '' ? setIsSearching(false) : setIsSearching(true)
-	}
+  useEffect(() => {
+    const filterResults = suggestions.filter(suggestion =>
+      suggestion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredSuggestions(filterResults);
+  }, [searchTerm, suggestions]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleClickSuggestion = (suggestion) => {
+    setSearchTerm(suggestion);
+    onSearch(suggestion);
+  };
 
   return (
-    <div className = "flex">
-			<div>
-				<input
-					type = "text"
-					placeholder = {placeholder}
-					onChange = {handleChange}
-					className = "relative block placeholder-gray-500 bg-zinc-900 focus:outline-none px-3 py-2 rounded-l-full text-2xl caret-gray-300"
-					value = {searchText}
-				/>
-				{isSearching && (
-					<ul>
-						{data.map((item) => {
-							return <li key = {item}>{item}</li>
-						})}
-					</ul>
-				)}
-			</div>
-			<button className = "bg-gray-300 px-4 rounded-r-full bg-blue-500">
-				<FaSearch/>
-			</button>
-		</div>
-  )
-}
+    <div className="search-bar">
+      <div className="flex">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={searchTerm}
+          onChange={handleSearch}
+          className="block placeholder-gray-500 bg-zinc-900 text-gray-300 focus:outline-none px-3 py-2 rounded-l-full text-2xl caret-gray-300"
+        />
+        <button className="bg-zinc-900 text-gray-500 px-3 py-2 rounded-r-full text-xl"><FaSearch/></button>
+      </div>
+      {searchTerm && (
+        <ul className="bg-zinc-900 text-gray-300 text-lg divide-y divide-solid divide-gray-500">
+          {filteredSuggestions.length > 0 ? (
+            filteredSuggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleClickSuggestion(suggestion)}
+                className="py-2 cursor-pointer"
+                >
+                {suggestion}
+              </li>
+            ))
+          ) : (
+            <li>No suggestions found</li>
+          )}
+        </ul>
+      )}
+    </div>
+  );
+};
 
-export default SearchBar
+export default SearchBar;
